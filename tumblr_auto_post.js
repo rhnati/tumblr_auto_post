@@ -1,6 +1,5 @@
-const axios = require('axios');
-
-const OAuth = require('oauth');
+import axios from 'axios';
+import OAuth from 'oauth';
 
 const consumerKey = 'lrDZwgNaDvRlzkKoR7q0XVKJL3wiAExjCOtlg6RbCEomOo11xy';
 const consumerSecret = 'hfue6BVEEJg6Cs1cEaBTljg0aHnXBWBLGXpNeCAoZ83ZB5VdQR';
