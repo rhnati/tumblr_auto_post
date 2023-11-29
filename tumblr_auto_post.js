@@ -8,21 +8,21 @@ const accessTokenSecret = 'WT11COK507OUtRclVXvsDJJydg2pcKiqJgsHkIMgtV2mSq9tpb';
 
 const tumblrBlogIdentifier = 'sportscoreio.tumblr.com';
 
-async function fetchData() {
-    try {
-        console.log('start fetching data');
-        const response = await axios.get('https://sportscore.io/api/v1/football/matches/?match_status=live&sort_by_time=false&page=0', {
-            headers: {
-                'accept': 'application/json',
-                'X-API-Key': 'uqzmebqojezbivd2dmpakmj93j7gjm',
-            },
-        });
-
-        const data = response.data;
+function fetchData() {
+    fetch('https://sportscore.io/api/v1/football/matches/?match_status=live&sort_by_time=false&page=0', {
+        method: 'GET',
+        headers: {
+            "accept": "application/json",
+            'X-API-Key': 'uqzmebqojezbivd2dmpakmj93j7gjm',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
         processData(data.match_groups);
-    } catch (error) {
-        console.error('Error:', error.message);
-    }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 
 
