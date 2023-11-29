@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+const axios = require('axios');
 
 const OAuth = require('oauth');
 
@@ -9,21 +9,20 @@ const accessTokenSecret = 'WT11COK507OUtRclVXvsDJJydg2pcKiqJgsHkIMgtV2mSq9tpb';
 
 const tumblrBlogIdentifier = 'sportscoreio.tumblr.com';
 
-function fetchData() {
-    return fetch('https://sportscore.io/api/v1/football/matches/?match_status=live&sort_by_time=false&page=0', {
-        method: 'GET',
-        headers: {
-            "accept": "application/json",
-            'X-API-Key': 'uqzmebqojezbivd2dmpakmj93j7gjm',
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        return data.match_groups;
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+async function fetchData() {
+    try {
+        const response = await axios.get('https://sportscore.io/api/v1/football/matches/?match_status=live&sort_by_time=false&page=0', {
+            headers: {
+                'accept': 'application/json',
+                'X-API-Key': 'uqzmebqojezbivd2dmpakmj93j7gjm',
+            },
+        });
+
+        const matchGroups = response.data.match_groups;
+        processData(matchGroups);
+    } catch (error) {
+        console.error('Error fetching data:', error.message);
+    }
 }
 
 function processData(matchGroups) {
@@ -63,22 +62,22 @@ async function postToTumblr(postText) {
             body: postText,
         };
 
-        oauth.post(
+        const postData = await axios.post(
             `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
-            accessToken,
-            accessTokenSecret,
             postParams,
-            '',
-            (error, data) => {
-                if (error) {
-                    console.error('Error posting to Tumblr:', error);
-                } else {
-                    console.log('Post successful:', data);
-                }
+            {
+                headers: {
+                    Authorization: oauth.toHeader(oauth.authorize({
+                        url: `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
+                        method: 'POST',
+                    }, accessToken, accessTokenSecret)),
+                },
             }
         );
+
+        console.log('Post successful:', postData.data);
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error posting to Tumblr:', error.message);
     }
 }
 
