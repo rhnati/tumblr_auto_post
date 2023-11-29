@@ -56,7 +56,7 @@ async function postToTumblr(postText) {
             'HMAC-SHA1'
         );
 
-        const postParams = {
+        let postParams = {
             type: 'text',
             title: 'Automated Post',
             body: postText,
