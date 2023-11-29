@@ -27,22 +27,31 @@ function fetchData() {
 
 
 function processData(matchGroups) {
-    matchGroups.forEach(matchGroup => {
-        const competition = matchGroup['competition']['name'];
+    try {
+        if (!Array.isArray(matchGroups)) {
+            console.error('Invalid matchGroups:', matchGroups);
+            return;
+        }
 
-        matchGroup['matches'].forEach(match => {
-            const homeTeam = match['home_team']['name'];
-            const awayTeam = match['away_team']['name'];
-            const league = competition;
-            const matchLink = match['url'];
+        matchGroups.forEach(matchGroup => {
+            const competition = matchGroup['competition']['name'];
 
-            const postContent = `🎌 Match Started! 🎌\n\n`;
-            postContent += `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥\n\n`;
-            postContent += `Watch Now on SportScore: ${matchLink}\n\n`;
+            matchGroup['matches'].forEach(match => {
+                const homeTeam = match['home_team']['name'];
+                const awayTeam = match['away_team']['name'];
+                const league = competition;
+                const matchLink = match['url'];
 
-            postToTumblr(postContent);
+                const postContent = `🎌 Match Started! 🎌\n\n`;
+                postContent += `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥\n\n`;
+                postContent += `Watch Now on SportScore: ${matchLink}\n\n`;
+
+                postToTumblr(postContent);
+            });
         });
-    });
+    } catch (error) {
+        console.error('Error processing data:', error);
+    }
 }
 
 async function postToTumblr(postText) {
