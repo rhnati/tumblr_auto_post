@@ -10,20 +10,21 @@ const tumblrBlogIdentifier = 'sportscoreio.tumblr.com';
 
 async function fetchData() {
     try {
+        console.log('start fetching data');
         const response = await axios.get('https://sportscore.io/api/v1/football/matches/?match_status=live&sort_by_time=false&page=0', {
-            method: 'GET',
             headers: {
                 'accept': 'application/json',
                 'X-API-Key': 'uqzmebqojezbivd2dmpakmj93j7gjm',
             },
         });
 
-        const matchGroups = response.data.match_groups;
-        processData(matchGroups);
+        const data = response.data;
+        processData(data.match_groups);
     } catch (error) {
-        console.error('Error fetching data:', error.message);
+        console.error('Error:', error.message);
     }
 }
+
 
 function processData(matchGroups) {
     matchGroups.forEach(matchGroup => {
