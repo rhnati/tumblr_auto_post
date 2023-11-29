@@ -11,6 +11,7 @@ const tumblrBlogIdentifier = 'sportscoreio.tumblr.com';
 async function fetchData() {
     try {
         const response = await axios.get('https://sportscore.io/api/v1/football/matches/?match_status=live&sort_by_time=false&page=0', {
+            method: 'GET',
             headers: {
                 'accept': 'application/json',
                 'X-API-Key': 'uqzmebqojezbivd2dmpakmj93j7gjm',
