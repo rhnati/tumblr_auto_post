@@ -1,0 +1,16 @@
+{
+  "name": "tumblr_auto_post",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "tumblr_auto_post.js",
+  "scripts": {
+    "start": "node tumblr_auto_post.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
