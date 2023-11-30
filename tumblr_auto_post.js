@@ -42,7 +42,7 @@ function processData(matchGroups) {
                 const league = competition;
                 const matchLink = match['url'];
 
-                const postContent = `🎌 Match Started! 🎌\n\n`;
+                let postContent = `🎌 Match Started! 🎌\n\n`;
                 postContent += `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥\n\n`;
                 postContent += `Watch Now on SportScore: ${matchLink}\n\n`;
 
