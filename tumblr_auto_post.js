@@ -65,6 +65,7 @@ async function postToTumblr(postText) {
             null,
             'HMAC-SHA1'
         );
+        console.log(oauth)
 
         let postParams = {
             type: 'text',
@@ -73,7 +74,6 @@ async function postToTumblr(postText) {
         };
 
         const postData = await axios.post(
-            console.log(postParams)
             `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
             postParams,
             {
