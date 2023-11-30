@@ -8,6 +8,8 @@ const accessTokenSecret = 'WT11COK507OUtRclVXvsDJJydg2pcKiqJgsHkIMgtV2mSq9tpb';
 
 const tumblrBlogIdentifier = 'sportscoreio.tumblr.com';
 
+const postedMatches = new Set();
+
 function fetchData() {
     fetch('https://sportscore.io/api/v1/football/matches/?match_status=live&sort_by_time=false&page=0', {
         method: 'GET',
@@ -33,9 +35,22 @@ function processData(matchGroups) {
         }
 
         matchGroups.forEach(matchGroup => {
-            const competition = matchGroup['competition']['name'];
+            getMatch(matchGroup);
+        });
+    } catch (error) {
+        console.error('Error processing data:', error);
+    }
+}
 
-            matchGroup['matches'].forEach(match => {
+async function getMatch(matchGroup) {
+    try {
+        const competition = matchGroup['competition']['name'];
+
+        matchGroup['matches'].forEach(match => {
+            const matchId = match.id; // Use a unique identifier for each match
+
+            // Check if the match has already been posted
+            if (!postedMatches.has(matchId)) {
                 const homeTeam = match['home_team']['name'];
                 const awayTeam = match['away_team']['name'];
                 const league = competition;
@@ -46,10 +61,13 @@ function processData(matchGroups) {
                 postContent += `Watch Now on SportScore: ${matchLink}\n\n`;
 
                 postToTumblr(postContent);
-            });
+
+                // Add the match ID to the set of posted matches
+                postedMatches.add(matchId);
+            }
         });
     } catch (error) {
-        console.error('Error processing data:', error);
+        console.error('Error getting match:', error.message);
     }
 }
 
@@ -90,6 +108,6 @@ async function postToTumblr(postText) {
     }
 }
 
-setInterval(fetchData, 30000);
+setInterval(fetchData, 60000);
 
 fetchData();
