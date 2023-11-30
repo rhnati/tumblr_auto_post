@@ -57,8 +57,8 @@ function processData(matchGroups) {
 async function postToTumblr(postText) {
     try {
         const oauth = new OAuth.OAuth(
-            'https://www.tumblr.com/oauth/request_token',
-            'https://www.tumblr.com/oauth/access_token',
+            null,
+            null,
             consumerKey,
             consumerSecret,
             '1.0A',
@@ -66,22 +66,26 @@ async function postToTumblr(postText) {
             'HMAC-SHA1'
         );
 
-        let postParams = {
-            type: 'text',
-            title: 'Automated Post',
-            body: postText,
+        const requestData = {
+            url: `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
+            method: 'POST',
+            data: {
+                type: 'text',
+                title: 'Automated Post',
+                body: postText,
+            },
         };
 
+        const signedRequest = oauth.authorize(requestData, {
+            token: accessToken,
+            token_secret: accessTokenSecret,
+        });
+
         const postData = await axios.post(
-            `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
-            postParams,
+            signedRequest.url,
+            signedRequest.data,
             {
-                headers: {
-                    Authorization: oauth.toHeader(oauth.authorize({
-                        url: `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
-                        method: 'POST',
-                    }, accessToken, accessTokenSecret)),
-                },
+                headers: signedRequest.headers,
             }
         );
 
