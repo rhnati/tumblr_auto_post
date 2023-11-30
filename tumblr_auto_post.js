@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { createHmac } from 'crypto';
 import OAuth from 'oauth';
 
 const consumerKey = 'lrDZwgNaDvRlzkKoR7q0XVKJL3wiAExjCOtlg6RbCEomOo11xy';
@@ -56,35 +55,38 @@ function processData(matchGroups) {
 
 async function postToTumblr(postText) {
     try {
-        const oauth = OAuth({
-            consumer: { key: consumerKey, secret: consumerSecret },
-            signature_method: 'HMAC-SHA1',
-            hash_function(base_string, key) {
-                return createHmac('sha1', key).update(base_string).digest('base64');
-            },
-        });
-
-        const requestData = {
-            url: `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
-            method: 'POST',
-            data: {
-                type: 'text',
-                title: 'Automated Post',
-                body: postText,
-            },
-        };
-
-        const headers = oauth.toHeader(oauth.authorize(requestData, { key: accessToken, secret: accessTokenSecret }));
-
-        const postData = await axios.post(
-            requestData.url,
-            requestData.data,
-            { headers: headers }
+        const oauth = new OAuth.OAuth(
+            null,
+            null,
+            consumerKey,
+            consumerSecret,
+            '1.0A',
+            null,
+            'HMAC-SHA1'
         );
 
-        console.log('Post successful:', postData.data);
+        const postParams = {
+            type: 'text',
+            title: 'Automated Post',
+            body: postText,
+        };
+
+        oauth.post(
+            `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
+            accessToken,
+            accessTokenSecret,
+            postParams,
+            '',
+            (error, data) => {
+                if (error) {
+                    console.error('Error posting to Tumblr:', error);
+                } else {
+                    console.log('Post successful:', data);
+                }
+            }
+        );
     } catch (error) {
-        console.error('Error posting to Tumblr:', error.message);
+        console.error('Error:', error);
     }
 }
 
