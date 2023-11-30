@@ -65,7 +65,6 @@ async function postToTumblr(postText) {
             null,
             'HMAC-SHA1'
         );
-        console.log(oauth)
 
         let postParams = {
             type: 'text',
@@ -78,7 +77,7 @@ async function postToTumblr(postText) {
             postParams,
             {
                 headers: {
-                    Authorization: oauth.toHeader(oauth.authorize({
+                    Authorization: oauth.toHeader(authorize({
                         url: `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
                         method: 'POST',
                     }, accessToken, accessTokenSecret)),
