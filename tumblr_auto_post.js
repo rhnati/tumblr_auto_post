@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { createHmac } from 'crypto';
 import OAuth from 'oauth';
 
 const consumerKey = 'lrDZwgNaDvRlzkKoR7q0XVKJL3wiAExjCOtlg6RbCEomOo11xy';
@@ -41,7 +42,7 @@ function processData(matchGroups) {
                 const league = competition;
                 const matchLink = match['url'];
 
-                let postContent = `🎌 Match Started! 🎌\n\n`;
+                const postContent = `🎌 Match Started! 🎌\n\n`;
                 postContent += `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥\n\n`;
                 postContent += `Watch Now on SportScore: ${matchLink}\n\n`;
 
@@ -59,7 +60,7 @@ async function postToTumblr(postText) {
             consumer: { key: consumerKey, secret: consumerSecret },
             signature_method: 'HMAC-SHA1',
             hash_function(base_string, key) {
-                return crypto.createHmac('sha1', key).update(base_string).digest('base64');
+                return createHmac('sha1', key).update(base_string).digest('base64');
             },
         });
 
@@ -72,7 +73,6 @@ async function postToTumblr(postText) {
                 body: postText,
             },
         };
-        console.log(requestData);
 
         const headers = oauth.toHeader(oauth.authorize(requestData, { key: accessToken, secret: accessTokenSecret }));
 
