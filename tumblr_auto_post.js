@@ -62,6 +62,7 @@ async function postToTumblr(postText) {
                 return crypto.createHmac('sha1', key).update(base_string).digest('base64');
             },
         });
+        console.log(oauth);
 
         const requestData = {
             url: `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
@@ -80,7 +81,6 @@ async function postToTumblr(postText) {
             requestData.data,
             { headers: headers }
         );
-        console.log(oauth);
 
         console.log('Post successful:', postData.data);
     } catch (error) {
