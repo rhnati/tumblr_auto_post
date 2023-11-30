@@ -8,23 +8,22 @@ const accessTokenSecret = 'WT11COK507OUtRclVXvsDJJydg2pcKiqJgsHkIMgtV2mSq9tpb';
 
 const tumblrBlogIdentifier = 'sportscoreio.tumblr.com';
 
-function fetchData() {
-    fetch('https://sportscore.io/api/v1/football/matches/?match_status=live&sort_by_time=false&page=0', {
-        method: 'GET',
-        headers: {
-            "accept": "application/json",
-            'X-API-Key': 'uqzmebqojezbivd2dmpakmj93j7gjm',
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        processData(data.match_groups);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
+async function fetchData() {
+    try {
+        console.log('start fetching data');
+        const response = await axios.get('https://sportscore.io/api/v1/football/matches/?match_status=live&sort_by_time=false&page=0', {
+            headers: {
+                'accept': 'application/json',
+                'X-API-Key': 'your_api_key',
+            },
+        });
 
+        const data = response.data;
+        processData(data.match_groups);
+    } catch (error) {
+        console.error('Error:', error.message);
+    }
+}
 
 function processData(matchGroups) {
     try {
@@ -56,15 +55,13 @@ function processData(matchGroups) {
 
 async function postToTumblr(postText) {
     try {
-        const oauth = new OAuth.OAuth(
-            null,
-            null,
-            consumerKey,
-            consumerSecret,
-            '1.0A',
-            null,
-            'HMAC-SHA1'
-        );
+        const oauth = OAuth({
+            consumer: { key: consumerKey, secret: consumerSecret },
+            signature_method: 'HMAC-SHA1',
+            hash_function(base_string, key) {
+                return crypto.createHmac('sha1', key).update(base_string).digest('base64');
+            },
+        });
 
         const requestData = {
             url: `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
@@ -76,17 +73,12 @@ async function postToTumblr(postText) {
             },
         };
 
-        const signedRequest = oauth.authorize(requestData, {
-            token: accessToken,
-            token_secret: accessTokenSecret,
-        });
+        const headers = oauth.toHeader(oauth.authorize(requestData, { key: accessToken, secret: accessTokenSecret }));
 
         const postData = await axios.post(
-            signedRequest.url,
-            signedRequest.data,
-            {
-                headers: signedRequest.headers,
-            }
+            requestData.url,
+            requestData.data,
+            { headers: headers }
         );
 
         console.log('Post successful:', postData.data);
