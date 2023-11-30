@@ -57,8 +57,8 @@ function processData(matchGroups) {
 async function postToTumblr(postText) {
     try {
         const oauth = new OAuth.OAuth(
-            null,
-            null,
+            'https://www.tumblr.com/oauth/request_token',
+            'https://www.tumblr.com/oauth/access_token',
             consumerKey,
             consumerSecret,
             '1.0A',
