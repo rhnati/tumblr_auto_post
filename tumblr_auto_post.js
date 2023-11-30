@@ -80,6 +80,7 @@ async function postToTumblr(postText) {
             requestData.data,
             { headers: headers }
         );
+        console.log(oauth);
 
         console.log('Post successful:', postData.data);
     } catch (error) {
