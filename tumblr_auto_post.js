@@ -73,7 +73,7 @@ async function postToTumblr(postText) {
         };
 
         const postData = await axios.post(
-            console.log(tumblrBlogIdentifier)
+            console.log(postParams)
             `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
             postParams,
             {
