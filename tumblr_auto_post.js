@@ -66,26 +66,22 @@ async function postToTumblr(postText) {
             'HMAC-SHA1'
         );
 
-        const requestData = {
-            url: `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
-            method: 'POST',
-            data: {
-                type: 'text',
-                title: 'Automated Post',
-                body: postText,
-            },
+        let postParams = {
+            type: 'text',
+            title: 'Automated Post',
+            body: postText,
         };
 
-        const signedRequest = oauth.authorize(requestData, {
-            token: accessToken,
-            token_secret: accessTokenSecret,
-        });
-
         const postData = await axios.post(
-            signedRequest.url,
-            signedRequest.data,
+            `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/posts`,
+            postParams,
             {
-                headers: signedRequest.headers,
+                headers: {
+                    Authorization: oauth.toHeader(oauth.authorize({
+                        url: `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/posts`,
+                        method: 'POST',
+                    }, accessToken, accessTokenSecret)),
+                },
             }
         );
 
