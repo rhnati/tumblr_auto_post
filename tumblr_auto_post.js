@@ -85,7 +85,7 @@ async function postToTumblr(postText) {
 
         const postParams = {
             type: 'text',
-            title: 'Automated Post',
+            title: 'Match started!',
             body: postText,
         };
 
