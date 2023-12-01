@@ -55,6 +55,7 @@ async function getMatch(matchGroup) {
                 const awayTeam = match['away_team']['name'];
                 const league = competition;
                 const matchLink = match['url'];
+                const venueName = match.venue?.name
 
                 let postContent = {
                     message: `🎌Match Started!🎌 \n\n💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥 \n\nWatch Now on SportScore: ${matchLink} \n\n #${homeTeam.replace(/[^a-zA-Z]/g, "")} #${awayTeam.replace(/[^a-zA-Z]/g, "")} #${league.replace(/[^a-zA-Z]/g, "")} ${venueName ? '#' + venueName.replace(/[^a-zA-Z]/g, "") : ''}`,
