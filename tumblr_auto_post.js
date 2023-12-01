@@ -55,6 +55,7 @@ async function getMatch(matchGroup) {
                 const awayTeam = match['away_team']['name'];
                 const league = competition;
                 const matchLink = match['url'];
+                console.log(match)
                 const venueName = match['venue']['name'] || '';
 
                 let postContent = `🎌 Match Started! 🎌\n\n`;
