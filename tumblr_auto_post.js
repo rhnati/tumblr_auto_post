@@ -55,12 +55,12 @@ async function getMatch(matchGroup) {
                 const awayTeam = match['away_team']['name'];
                 const league = competition;
                 const matchLink = match['url'];
-                const venueName = match.venue?.name
+                const venueName = match['venue']['name'] || '';
 
-                let postContent = {
-                    message: `🎌Match Started!🎌 \n\n💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥 \n\nWatch Now on SportScore: ${matchLink} \n\n #${homeTeam.replace(/[^a-zA-Z]/g, "")} #${awayTeam.replace(/[^a-zA-Z]/g, "")} #${league.replace(/[^a-zA-Z]/g, "")} ${venueName ? '#' + venueName.replace(/[^a-zA-Z]/g, "") : ''}`,
-                    link: match.social_picture,
-                }
+                let postContent = `🎌 Match Started! 🎌\n\n`;
+                postContent += `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥\n\n`;
+                postContent += `Watch Now on SportScore: ${matchLink}\n\n`;
+                postContent += `Venue: ${venueName}\n\n`;
 
                 postToTumblr(postContent);
 
@@ -88,7 +88,7 @@ async function postToTumblr(postText) {
         const postParams = {
             type: 'text',
             title: 'Match started!',
-            body: JSON.stringify(postText)
+            body: postText,
         };
 
         oauth.post(
