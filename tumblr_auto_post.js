@@ -63,12 +63,14 @@ async function getMatch(matchGroup) {
         postContent += `Watch Now on SportScore: ${matchLink}\n\n`;
         postContent += `Venue: ${venueName}\n\n`;
 
-        // Introduce a delay of 1 minute before posting
+        // Post to Tumblr after 1 minute interval
         setTimeout(() => {
           postToTumblr(postContent);
-        }, 60000);
+        }, matchIndex * 60000); // Adjusted interval based on matchIndex
 
+        // Add matchId to the set to avoid reposting
         postedMatches.add(matchId);
+        matchIndex++;
       }
     });
   } catch (error) {
