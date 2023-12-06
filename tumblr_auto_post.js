@@ -5,6 +5,8 @@ const consumerSecret = 'XAZ4oOs8q5zhjKY4IJSkc8GSDQu2cRE7pSiQwVtZ4Dukv03nLF';
 const accessToken = 'G8WVRF9jySZEBo3JaZNPD8eteXScj24aVKJK4kfWcuMuA5eOz0';
 const accessTokenSecret = '5ZhZ4oqaLYYjD0RNWRDdOLVUBgKvoypTOvMmhyYwDhNv94PnPs';
 
+const tumblrBlogIdentifier = 'sportscore-io.tumblr.com';
+
 const postedMatches = new Set();
 
 function fetchData() {
