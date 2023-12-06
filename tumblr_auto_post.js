@@ -63,7 +63,9 @@ async function getMatch(matchGroup) {
                 postContent += `Watch Now on SportScore: ${matchLink}\n\n`;
                 postContent += `Venue: ${venueName}\n\n`;
 
-                postToTumblr(postContent);
+                setTimeout(() => {
+                    postToTumblr(postContent);
+                  }, 60000);
 
                 // Add the match ID to the set of posted matches
                 postedMatches.add(matchId);
