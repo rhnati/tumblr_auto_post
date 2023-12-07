@@ -59,8 +59,7 @@ async function getMatch(matchGroup) {
         const matchLink = match.url;
         const hashtags = `#${homeTeam.replace(/\s+/g, '')} #${awayTeam.replace(/\s+/g, '')} #${league.replace(/\s+/g, '')}`;
 
-        let postContent = `🎌 Match Started! 🎌\n\n`;
-        postContent += `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥\n\n`;
+        let postContent = `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥\n\n`;
         postContent += `Watch Now on SportScore: ${matchLink}\n\n`;
         postContent += `${hashtags}\n\n`;
 
@@ -93,7 +92,7 @@ async function postToTumblr(postText) {
 
     const postParams = {
       type: "text",
-      title: "Match started!",
+      title: "🎌 Match Started! 🎌",
       body: postText,
     };
 
