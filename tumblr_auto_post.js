@@ -62,6 +62,7 @@ async function getMatch(matchGroup) {
         let postContent = `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥\n\n`;
         postContent += `Watch Now on SportScore: ${matchLink}\n\n`;
         postContent += `${hashtags}\n\n`;
+        postContent += `${matchLink}`;
 
         // Post to Tumblr after 1 minute interval
         setTimeout(() => {
