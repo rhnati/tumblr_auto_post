@@ -1,5 +1,4 @@
 import OAuth from "oauth";
-import fetch from "node-fetch"; // Assuming you have the 'node-fetch' module installed
 
 const consumerKey = 'qSjWrsq1wLRd5fmwxdkYwWO9PFXBxgYLfo3uyv8EMll6nYwOPN';
 const consumerSecret = 'XAZ4oOs8q5zhjKY4IJSkc8GSDQu2cRE7pSiQwVtZ4Dukv03nLF';
@@ -50,7 +49,7 @@ async function getMatch(matchGroup) {
   try {
     const competition = matchGroup.competition.name;
 
-    matchGroup.matches.forEach(async (match) => {
+    matchGroup.matches.forEach((match) => {
       const matchId = match.id;
 
       if (!postedMatches.has(matchId)) {
@@ -63,12 +62,7 @@ async function getMatch(matchGroup) {
         let postContent = `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥\n\n`;
         postContent += `Watch Now on SportScore: ${matchLink}\n\n`;
         postContent += `${hashtags}\n\n`;
-
-        // Fetch photo and append it to the post content
-        const photoUrl = await fetchMatchPhoto(matchLink);
-        if (photoUrl) {
-          postContent += `${photoUrl}`;
-        }
+        postContent += `${matchLink}`;
 
         // Post to Tumblr after 1 minute interval
         setTimeout(() => {
@@ -82,25 +76,6 @@ async function getMatch(matchGroup) {
     });
   } catch (error) {
     console.error("Error getting match:", error.message);
-  }
-}
-
-async function fetchMatchPhoto(matchLink) {
-  try {
-    const photoResponse = await fetch(matchLink, {
-      method: 'GET',
-    });
-
-    if (photoResponse.ok) {
-      const photoData = await photoResponse.json();
-      return photoData.photoUrl;
-    } else {
-      console.error('Failed to fetch photo:', photoResponse.status);
-      return null;
-    }
-  } catch (error) {
-    console.error('Error fetching photo:', error);
-    return null;
   }
 }
 
