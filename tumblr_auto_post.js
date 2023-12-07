@@ -66,7 +66,7 @@ async function getMatch(matchGroup) {
 
         // Post to Tumblr after 1 minute interval
         setTimeout(() => {
-          postToTumblr(postContent);
+          postToTumblr(postContent, matchLink);
         }, matchIndex * 60000); // Adjusted interval based on matchIndex
 
         // Add matchId to the set to avoid reposting
@@ -79,7 +79,7 @@ async function getMatch(matchGroup) {
   }
 }
 
-async function postToTumblr(postText) {
+async function postToTumblr(postText, matchLink) {
   try {
     const oauth = new OAuth.OAuth(
       null,
