@@ -1,5 +1,5 @@
 import OAuth from "oauth";
-import fetch from "node-fetch"; // Assuming you have the 'node-fetch' module installed
+import fetch from "node-fetch";
 
 const consumerKey = 'qSjWrsq1wLRd5fmwxdkYwWO9PFXBxgYLfo3uyv8EMll6nYwOPN';
 const consumerSecret = 'XAZ4oOs8q5zhjKY4IJSkc8GSDQu2cRE7pSiQwVtZ4Dukv03nLF';
@@ -58,22 +58,23 @@ async function getMatch(matchGroup) {
         const awayTeam = match.away_team.name;
         const league = competition;
         const matchLink = match.url;
+
+        // Generate hashtags based on team names and league
         const hashtags = `#${homeTeam.replace(/\s+/g, '')} #${awayTeam.replace(/\s+/g, '')} #${league.replace(/\s+/g, '')}`;
 
-        let postContent = `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥\n\n`;
+        let postContent = `🎌 Match Started! 🎌\n\n`;
+        postContent += `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥\n\n`;
         postContent += `Watch Now on SportScore: ${matchLink}\n\n`;
-        postContent += `${hashtags}\n\n`;
+        postContent += `Hashtags: ${hashtags}\n\n`; // Include hashtags in the post
 
-        // Fetch photo and append it to the post content
-        const photoUrl = await fetchMatchPhoto(matchLink);
+        // Extract photo URL from the match link
+        const photoUrl = extractPhotoUrlFromMatchLink(matchLink);
         if (photoUrl) {
-          postContent += `${photoUrl}`;
+          // Post to Tumblr after 1 minute interval
+          setTimeout(() => {
+            postToTumblr(postContent, photoUrl);
+          }, matchIndex * 60000);
         }
-
-        // Post to Tumblr after 1 minute interval
-        setTimeout(() => {
-          postToTumblr(postContent);
-        }, matchIndex * 60000);
 
         // Add matchId to the set to avoid reposting
         postedMatches.add(matchId);
@@ -85,26 +86,13 @@ async function getMatch(matchGroup) {
   }
 }
 
-async function fetchMatchPhoto(matchLink) {
-  try {
-    const photoResponse = await fetch(matchLink, {
-      method: 'GET',
-    });
-
-    if (photoResponse.ok) {
-      const photoData = await photoResponse.json();
-      return photoData.photoUrl;
-    } else {
-      console.error('Failed to fetch photo:', photoResponse.status);
-      return null;
-    }
-  } catch (error) {
-    console.error('Error fetching photo:', error);
-    return null;
-  }
+function extractPhotoUrlFromMatchLink(matchLink) {
+  // Replace this with your actual logic based on the structure of your photo URLs
+  // For example, if the photo URL is part of the match link, you might just return the match link itself
+  return matchLink;
 }
 
-async function postToTumblr(postText) {
+async function postToTumblr(postText, photoUrl) {
   try {
     const oauth = new OAuth.OAuth(
       null,
@@ -117,9 +105,9 @@ async function postToTumblr(postText) {
     );
 
     const postParams = {
-      type: "text",
-      title: "🎌 Match Started! 🎌",
-      body: postText,
+      type: "photo",
+      caption: postText,
+      data: [photoUrl],
     };
 
     oauth.post(
