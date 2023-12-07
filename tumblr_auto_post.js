@@ -57,12 +57,12 @@ async function getMatch(matchGroup) {
         const awayTeam = match.away_team.name;
         const league = competition;
         const matchLink = match.url;
-        const venueName = match.venue ? match.venue.name : "";
+        const hashtags = `#${homeTeam.replace(/\s+/g, '')} #${awayTeam.replace(/\s+/g, '')} #${league.replace(/\s+/g, '')}`;
 
         let postContent = `🎌 Match Started! 🎌\n\n`;
         postContent += `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥\n\n`;
         postContent += `Watch Now on SportScore: ${matchLink}\n\n`;
-        postContent += `Venue: ${venueName}\n\n`;
+        postContent += `${hashtags}\n\n`;
 
         // Post to Tumblr after 1 minute interval
         setTimeout(() => {
