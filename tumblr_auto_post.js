@@ -92,10 +92,10 @@ async function postToTumblr(postText) {
     );
 
     const postParams = {
-      type: "text",
-      title: "🎌 Match Started! 🎌",
-      body: postText,
-    };
+      type: "photo",
+      caption: postText,
+      source: matchLink,
+    };    
 
     oauth.post(
       `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
