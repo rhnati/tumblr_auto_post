@@ -43,7 +43,7 @@ async function convertAndSendImage(imageUrl, id) {
       const sshConfig = {
         host: '45.61.138.203',
         username: 'root',
-        privateKey: 'Ssgeli9988!@a',
+        password: 'Ssgeli9988!@a',
       };
 
       const convertedImage = await image.jpeg().toBuffer();
