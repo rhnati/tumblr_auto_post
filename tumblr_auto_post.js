@@ -22,7 +22,7 @@ const port = 3000;
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads_tumblr/')
+    cb(null, 'tumblr_auto_post/uploads_tumblr/')
   },
   filename: (req, file, cb) => {
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
@@ -31,7 +31,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.use('uploads_tumblr/', express.static('uploads_tumblr'));
+app.use('tumblr_auto_post/uploads_tumblr/', express.static('tumblr_auto_post/uploads_tumblr'));
 
 app.post('/upload', upload.single('image'), (req, res) => {
   const filePath = `/tumblr_auto_post/uploads_tumblr/${req.file.filename}`;
