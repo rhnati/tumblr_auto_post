@@ -8,6 +8,7 @@ import FormData from 'form-data';
 import { NodeSSH } from 'node-ssh';
 import SFTPClient from 'ssh2-sftp-client';
 import { Buffer } from 'buffer';
+import fs from 'fs';
 
 const ssh = new NodeSSH();
 
@@ -40,36 +41,12 @@ async function convertAndSendImage(imageUrl, id) {
           height: Math.floor(metadata.width / 1.91),
           fit: 'cover'
       });
-      
-      const sftp = new SFTPClient();
-      
-      const sftpConfig = {
-        host: '45.61.138.203',
-        port: '22', // стандартний порт для SFTP
-        username: 'root',
-        password: 'Ssgeli9988!@a'
-      };
 
       const convertedImage = await image.jpeg().toBuffer();
 
-      const imageBuffer = Buffer.from(convertedImage, 'binary');
-
-      const remoteFilePath = `image/image_${id}.jpg`;
-      console.log(imageBuffer);
-      console.log(remoteFilePath);
-
-      sftp.connect(sftpConfig)
-      .then(() => {
-        console.log("Connected to the server.");
-        return sftp.put(imageBuffer, remoteFilePath);
-      })
-      .then(() => {
-        console.log("Buffer uploaded successfully.");
-        return sftp.end();
-      })
-      .catch(err => {
-        console.error("Something went wrong:", err);
-      });
+      const ws = fs.createWriteStream("sportscorefacebook/uploads/tumblr")
+      ws.write(convertedImage);
+      ws.end();
   } catch (error) {
       console.error('Error in converting or sending the image:', error);
   }
