@@ -67,7 +67,7 @@ async function convertAndSendImage(imageUrl) {
       const form = new FormData();
       form.append('image', convertedImage, { filename: 'temp-converted-image.jpg' });
 
-      const uploadResponse = await axios.post('http://localhost:3000/upload', form, {
+      const uploadResponse = await axios.post('http://localhost:3001/upload', form, {
           headers: {
               ...form.getHeaders(),
           },
