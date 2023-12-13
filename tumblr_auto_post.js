@@ -45,7 +45,7 @@ app.post('/upload', upload.single('image'), (req, res) => {
 //Convert image to jpeg
 async function convertAndSendImage(imageUrl) {
   try {
-      await clearUploadsFolder();
+      // await clearUploadsFolder();
       const response = await axios({
           method: 'get',
           url: imageUrl,
