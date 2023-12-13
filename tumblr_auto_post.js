@@ -18,11 +18,11 @@ let matchIndex = 0;
 
 //Create server
 const app = express();
-const port = 3000; 
+const port = 3001; 
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'tumblr_auto_post/uploads_tumblr/')
+    cb(null, 'uploads_tumblr/')
   },
   filename: (req, file, cb) => {
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
@@ -31,21 +31,21 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.use('tumblr_auto_post/uploads_tumblr/', express.static('tumblr_auto_post/uploads_tumblr'));
+app.use('uploads_tumblr/', express.static('uploads_tumblr'));
 
 app.post('/upload', upload.single('image'), (req, res) => {
-  const filePath = `/tumblr_auto_post/uploads_tumblr/${req.file.filename}`;
+  const filePath = `/uploads_tumblr/${req.file.filename}`;
   res.send({ filePath });
 });
 
-// app.listen(port, () => {
-//   console.log(`http://localhost:${port}`);
-// });
+app.listen(port, () => {
+  console.log(`http://localhost:${port}`);
+});
 
 //Convert image to jpeg
 async function convertAndSendImage(imageUrl) {
   try {
-      // await clearUploadsFolder();
+      await clearUploadsFolder();
       const response = await axios({
           method: 'get',
           url: imageUrl,
@@ -73,7 +73,6 @@ async function convertAndSendImage(imageUrl) {
           },
       });
 
-      console.log(uploadResponse);
       return uploadResponse.data;
   } catch (error) {
       console.error('Error in converting or sending the image:', error);
@@ -116,10 +115,10 @@ function processData(matchGroups) {
 }
 
 async function getMatch(matchGroup) {
-  // console.log(matchGroup);
+  console.log(matchGroup);
   const convertedImageResponse = await convertAndSendImage(matchGroup.social_picture);
   const myConvertedImagePath = convertedImageResponse.filePath;
-  // console.log(myConvertedImagePath);
+  console.log(myConvertedImagePath);
   try {
     const competition = matchGroup.competition.name;
 
