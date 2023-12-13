@@ -73,6 +73,7 @@ async function convertAndSendImage(imageUrl) {
           },
       });
 
+      console.log(uploadResponse);
       return uploadResponse.data;
   } catch (error) {
       console.error('Error in converting or sending the image:', error);
