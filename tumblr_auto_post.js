@@ -115,7 +115,6 @@ function processData(matchGroups) {
 }
 
 async function getMatch(matchGroup) {
-  // console.log(myConvertedImagePath);
   try {
     const competition = matchGroup.competition.name;
 
@@ -123,7 +122,6 @@ async function getMatch(matchGroup) {
       const matchId = match.id;
       const convertedImageResponse = await convertAndSendImage(match.social_picture);
       const myConvertedImagePath = convertedImageResponse.filePath;
-      console.log(myConvertedImagePath);
 
       if (!postedMatches.has(matchId)) {
         const homeTeam = match.home_team.name;
@@ -162,6 +160,7 @@ async function postToTumblr(postText, matchLink) {
       null,
       "HMAC-SHA1"
     );
+    console.log(matchLink);
 
     const postParams = {
       type: "photo",
