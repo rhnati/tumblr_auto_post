@@ -115,15 +115,15 @@ function processData(matchGroups) {
 }
 
 async function getMatch(matchGroup) {
-  console.log(matchGroup);
-  const convertedImageResponse = await convertAndSendImage(matchGroup.social_picture);
-  const myConvertedImagePath = convertedImageResponse.filePath;
   // console.log(myConvertedImagePath);
   try {
     const competition = matchGroup.competition.name;
 
-    matchGroup.matches.forEach((match) => {
+    for (const match of matchGroup.matches) {
       const matchId = match.id;
+      const convertedImageResponse = await convertAndSendImage(match.social_picture);
+      const myConvertedImagePath = convertedImageResponse.filePath;
+      console.log(myConvertedImagePath);
 
       if (!postedMatches.has(matchId)) {
         const homeTeam = match.home_team.name;
@@ -145,7 +145,7 @@ async function getMatch(matchGroup) {
         postedMatches.add(matchId);
         matchIndex++;
       }
-    });
+    };
   } catch (error) {
     console.error("Error getting match:", error.message);
   }
