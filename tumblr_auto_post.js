@@ -44,9 +44,9 @@ async function convertAndSendImage(imageUrl, id) {
 
       const convertedImage = await image.jpeg().toBuffer();
 
-      const ws = fs.createWriteStream("uploads_tumblr")
-      ws.write(convertedImage);
-      ws.end();
+      const ws = fs.createWriteStream("/uploads_tumblr", convertedImage);
+      // ws.write(convertedImage);
+      // ws.end();
   } catch (error) {
       console.error('Error in converting or sending the image:', error);
   }
