@@ -38,9 +38,9 @@ app.post('/upload', upload.single('image'), (req, res) => {
   res.send({ filePath });
 });
 
-app.listen(port, () => {
-  console.log(`http://localhost:${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`http://localhost:${port}`);
+// });
 
 //Convert image to jpeg
 async function convertAndSendImage(imageUrl) {
