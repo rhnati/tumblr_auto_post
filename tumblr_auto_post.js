@@ -1,4 +1,10 @@
 import OAuth from "oauth";
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import axios from 'axios';
+import sharp from 'sharp';
+import FormData from 'form-data';
 
 const consumerKey = 'qSjWrsq1wLRd5fmwxdkYwWO9PFXBxgYLfo3uyv8EMll6nYwOPN';
 const consumerSecret = 'XAZ4oOs8q5zhjKY4IJSkc8GSDQu2cRE7pSiQwVtZ4Dukv03nLF';
@@ -9,6 +15,69 @@ const tumblrBlogIdentifier = 'sportscore-io.tumblr.com';
 
 const postedMatches = new Set();
 let matchIndex = 0;
+
+//Create server
+const app = express();
+const port = 3000; 
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads_tumblr/')
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+  }
+});
+
+const upload = multer({ storage: storage });
+
+app.use('uploads_tumblr/', express.static('uploads_tumblr'));
+
+app.post('/upload', upload.single('image'), (req, res) => {
+  const filePath = `/uploads_tumblr/${req.file.filename}`;
+  res.send({ filePath });
+});
+
+app.listen(port, () => {
+  console.log(`http://localhost:${port}`);
+});
+
+//Convert image to jpeg
+async function convertAndSendImage(imageUrl) {
+  try {
+      await clearUploadsFolder();
+      const response = await axios({
+          method: 'get',
+          url: imageUrl,
+          responseType: 'arraybuffer'
+      });
+
+      let image = sharp(response.data);
+      
+      const metadata = await image.metadata();
+      
+      image = image.resize({
+          width: metadata.width,
+          height: Math.floor(metadata.width / 1.91),
+          fit: 'cover'
+      });
+
+      const convertedImage = await image.jpeg().toBuffer();
+
+      const form = new FormData();
+      form.append('image', convertedImage, { filename: 'temp-converted-image.jpg' });
+
+      const uploadResponse = await axios.post('http://localhost:3000/upload', form, {
+          headers: {
+              ...form.getHeaders(),
+          },
+      });
+
+      return uploadResponse.data;
+  } catch (error) {
+      console.error('Error in converting or sending the image:', error);
+  }
+}
 
 function fetchData() {
   fetch(
@@ -46,6 +115,10 @@ function processData(matchGroups) {
 }
 
 async function getMatch(matchGroup) {
+  console.log(matchGroup);
+  const convertedImageResponse = await convertAndSendImage(matchGroup.social_picture);
+  const myConvertedImagePath = convertedImageResponse.filePath;
+  console.log(myConvertedImagePath);
   try {
     const competition = matchGroup.competition.name;
 
