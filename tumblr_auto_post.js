@@ -55,6 +55,8 @@ async function convertAndSendImage(imageUrl, id) {
       const imageBuffer = Buffer.from(convertedImage, 'binary');
 
       const remoteFilePath = `/tumblr_auto_post/uploads_tumblr/image_${id}`;
+      console.log(imageBuffer);
+      console.log(remoteFilePath);
 
       sftp.connect(sftpConfig)
       .then(() => {
