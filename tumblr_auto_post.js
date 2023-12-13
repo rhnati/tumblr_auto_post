@@ -54,7 +54,7 @@ async function convertAndSendImage(imageUrl, id) {
 
       const imageBuffer = Buffer.from(convertedImage, 'binary');
 
-      const remoteFilePath = `/image/image_${id}.jpg`;
+      const remoteFilePath = `image/image_${id}.jpg`;
       console.log(imageBuffer);
       console.log(remoteFilePath);
 
