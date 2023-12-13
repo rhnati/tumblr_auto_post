@@ -45,7 +45,7 @@ app.listen(port, () => {
 //Convert image to jpeg
 async function convertAndSendImage(imageUrl) {
   try {
-      await clearUploadsFolder();
+      // await clearUploadsFolder();
       const response = await axios({
           method: 'get',
           url: imageUrl,
@@ -115,10 +115,10 @@ function processData(matchGroups) {
 }
 
 async function getMatch(matchGroup) {
-  console.log(matchGroup);
+  console.log(matchGroup.social_picture);
   const convertedImageResponse = await convertAndSendImage(matchGroup.social_picture);
   const myConvertedImagePath = convertedImageResponse.filePath;
-  console.log(myConvertedImagePath);
+  // console.log(myConvertedImagePath);
   try {
     const competition = matchGroup.competition.name;
 
