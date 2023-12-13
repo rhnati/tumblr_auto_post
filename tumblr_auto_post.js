@@ -5,6 +5,10 @@ import path from 'path';
 import axios from 'axios';
 import sharp from 'sharp';
 import FormData from 'form-data';
+import { NodeSSH } from 'node-ssh';
+import { Buffer } from 'buffer';
+
+const ssh = new NodeSSH();
 
 const consumerKey = 'qSjWrsq1wLRd5fmwxdkYwWO9PFXBxgYLfo3uyv8EMll6nYwOPN';
 const consumerSecret = 'XAZ4oOs8q5zhjKY4IJSkc8GSDQu2cRE7pSiQwVtZ4Dukv03nLF';
@@ -16,34 +20,8 @@ const tumblrBlogIdentifier = 'sportscore-io.tumblr.com';
 const postedMatches = new Set();
 let matchIndex = 0;
 
-//Create server
-const app = express();
-const port = 3001; 
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads_tumblr/')
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
-  }
-});
-
-const upload = multer({ storage: storage });
-
-app.use('uploads_tumblr/', express.static('uploads_tumblr'));
-
-app.post('/upload', upload.single('image'), (req, res) => {
-  const filePath = `/uploads_tumblr/${req.file.filename}`;
-  res.send({ filePath });
-});
-
-app.listen(port, () => {
-  console.log(`http://localhost:${port}`);
-});
-
 //Convert image to jpeg
-async function convertAndSendImage(imageUrl) {
+async function convertAndSendImage(imageUrl, id) {
   try {
       // await clearUploadsFolder();
       const response = await axios({
@@ -62,18 +40,31 @@ async function convertAndSendImage(imageUrl) {
           fit: 'cover'
       });
 
+      const sshConfig = {
+        host: '45.61.138.203',
+        username: 'root',
+        privateKey: 'Ssgeli9988!@a',
+      };
+
       const convertedImage = await image.jpeg().toBuffer();
 
-      const form = new FormData();
-      form.append('image', convertedImage, { filename: 'temp-converted-image.jpg' });
+      const imageBuffer = Buffer.from(convertedImage, 'binary');
 
-      const uploadResponse = await axios.post('http://localhost:3001/upload', form, {
-          headers: {
-              ...form.getHeaders(),
-          },
+      const remoteFilePath = `/tumblr_auto_post/uploads_tumblr/image_${id}`;
+
+      ssh.connect(sshConfig)
+      .then(() => {
+        console.log("Connected to the server.");
+        return ssh.putBuffer(imageBuffer, remoteFilePath);
+      })
+      .then(() => {
+        console.log("Buffer uploaded successfully.");
+        ssh.dispose();
+      })
+      .catch(err => {
+        console.error("Something went wrong:", err);
+        ssh.dispose();
       });
-
-      return uploadResponse.data;
   } catch (error) {
       console.error('Error in converting or sending the image:', error);
   }
@@ -120,7 +111,7 @@ async function getMatch(matchGroup) {
 
     for (const match of matchGroup.matches) {
       const matchId = match.id;
-      const convertedImageResponse = await convertAndSendImage(match.social_picture);
+      const convertedImageResponse = await convertAndSendImage(match.social_picture, matchId);
       const myConvertedImagePath = convertedImageResponse.filePath;
 
       if (!postedMatches.has(matchId)) {
