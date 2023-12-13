@@ -115,7 +115,7 @@ function processData(matchGroups) {
 }
 
 async function getMatch(matchGroup) {
-  console.log(matchGroup.social_picture);
+  console.log(matchGroup);
   const convertedImageResponse = await convertAndSendImage(matchGroup.social_picture);
   const myConvertedImagePath = convertedImageResponse.filePath;
   // console.log(myConvertedImagePath);
