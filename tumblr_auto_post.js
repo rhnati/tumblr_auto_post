@@ -6,6 +6,7 @@ import axios from 'axios';
 import sharp from 'sharp';
 import FormData from 'form-data';
 import { NodeSSH } from 'node-ssh';
+import SFTPClient from 'ssh2-sftp-client';
 import { Buffer } from 'buffer';
 
 const ssh = new NodeSSH();
@@ -39,11 +40,14 @@ async function convertAndSendImage(imageUrl, id) {
           height: Math.floor(metadata.width / 1.91),
           fit: 'cover'
       });
-
-      const sshConfig = {
+      
+      const sftp = new SFTPClient();
+      
+      const sftpConfig = {
         host: '45.61.138.203',
+        port: '22', // стандартний порт для SFTP
         username: 'root',
-        password: 'Ssgeli9988!@a',
+        password: 'Ssgeli9988!@a'
       };
 
       const convertedImage = await image.jpeg().toBuffer();
@@ -52,18 +56,17 @@ async function convertAndSendImage(imageUrl, id) {
 
       const remoteFilePath = `/tumblr_auto_post/uploads_tumblr/image_${id}`;
 
-      ssh.connect(sshConfig)
+      sftp.connect(sftpConfig)
       .then(() => {
         console.log("Connected to the server.");
-        return ssh.putBuffer(imageBuffer, remoteFilePath);
+        return sftp.put(imageBuffer, remoteFilePath);
       })
       .then(() => {
         console.log("Buffer uploaded successfully.");
-        ssh.dispose();
+        return sftp.end();
       })
       .catch(err => {
         console.error("Something went wrong:", err);
-        ssh.dispose();
       });
   } catch (error) {
       console.error('Error in converting or sending the image:', error);
