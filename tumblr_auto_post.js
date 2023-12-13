@@ -116,10 +116,10 @@ function processData(matchGroups) {
 }
 
 async function getMatch(matchGroup) {
-  console.log(matchGroup);
+  // console.log(matchGroup);
   const convertedImageResponse = await convertAndSendImage(matchGroup.social_picture);
   const myConvertedImagePath = convertedImageResponse.filePath;
-  console.log(myConvertedImagePath);
+  // console.log(myConvertedImagePath);
   try {
     const competition = matchGroup.competition.name;
 
