@@ -138,7 +138,7 @@ async function getMatch(matchGroup) {
 
         // Post to Tumblr after 1 minute interval
         setTimeout(() => {
-          postToTumblr(postContent, matchLink);
+          postToTumblr(postContent, `http://45.61.138.203${myConvertedImagePath}`);
         }, matchIndex * 60000); // Adjusted interval based on matchIndex
 
         // Add matchId to the set to avoid reposting
