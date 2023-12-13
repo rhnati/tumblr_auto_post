@@ -34,7 +34,7 @@ const upload = multer({ storage: storage });
 app.use('uploads_tumblr/', express.static('uploads_tumblr'));
 
 app.post('/upload', upload.single('image'), (req, res) => {
-  const filePath = `/uploads_tumblr/${req.file.filename}`;
+  const filePath = `/tumblr_auto_post/uploads_tumblr/${req.file.filename}`;
   res.send({ filePath });
 });
 
