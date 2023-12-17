@@ -84,12 +84,16 @@ async function postToTumblr(postText, matchLink) {
   try {
     // Fetch WebP image using the matchLink
     const webpImageResponse = await fetch(matchLink);
-    const webpImageData = await webpImageResponse.buffer();
+    const webpImageBuffer = await webpImageResponse.buffer();
 
-    // Convert WebP to JPEG using sharp with explicit format specification
-    const jpegBuffer = await sharp(webpImageData, { input: 'buffer', raw: { format: 'webp' } })
+    // Convert WebP to JPEG using sharp stream
+    const jpegBuffer = await sharp()
+      .resize(800) // adjust the size as needed
       .jpeg()
       .toBuffer();
+
+    // Pipe the WebP image buffer through the sharp stream
+    await sharp(webpImageBuffer).toFormat('jpeg').pipe(jpegBuffer);
 
     const oauth = new OAuth.OAuth(
       null,
@@ -104,7 +108,7 @@ async function postToTumblr(postText, matchLink) {
     const postParams = {
       type: "photo",
       caption: postText,
-      data64: jpegBuffer.toString("base64"),
+      data64: jpegBuffer.toString("base64"), // Use base64-encoded JPEG data
     };
 
     oauth.post(
