@@ -1,4 +1,6 @@
 import OAuth from "oauth";
+import fetch from "node-fetch";
+import sharp from "sharp";
 
 const consumerKey = 'qSjWrsq1wLRd5fmwxdkYwWO9PFXBxgYLfo3uyv8EMll6nYwOPN';
 const consumerSecret = 'XAZ4oOs8q5zhjKY4IJSkc8GSDQu2cRE7pSiQwVtZ4Dukv03nLF';
@@ -10,24 +12,24 @@ const tumblrBlogIdentifier = 'sportscore-io.tumblr.com';
 const postedMatches = new Set();
 let matchIndex = 0;
 
-function fetchData() {
-  fetch(
-    "https://sportscore.io/api/v1/football/matches/?match_status=live&sort_by_time=false&page=0",
-    {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        "X-API-Key": "uqzmebqojezbivd2dmpakmj93j7gjm",
-      },
-    }
-  )
-    .then((response) => response.json())
-    .then((data) => {
-      processData(data.match_groups);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
+async function fetchData() {
+  try {
+    const response = await fetch(
+      "https://sportscore.io/api/v1/football/matches/?match_status=live&sort_by_time=false&page=0",
+      {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          "X-API-Key": "uqzmebqojezbivd2dmpakmj93j7gjm",
+        },
+      }
+    );
+
+    const data = await response.json();
+    processData(data.match_groups);
+  } catch (error) {
+    console.error("Error:", error);
+  }
 }
 
 function processData(matchGroups) {
@@ -80,6 +82,15 @@ async function getMatch(matchGroup) {
 
 async function postToTumblr(postText, matchLink) {
   try {
+    // Fetch WebP image using the matchLink
+    const webpImageResponse = await fetch(matchLink);
+    const webpImageData = await webpImageResponse.buffer();
+
+    // Convert WebP to JPEG using sharp
+    const jpegBuffer = await sharp(webpImageData)
+      .jpeg()
+      .toBuffer();
+
     const oauth = new OAuth.OAuth(
       null,
       null,
@@ -93,8 +104,8 @@ async function postToTumblr(postText, matchLink) {
     const postParams = {
       type: "photo",
       caption: postText,
-      source: matchLink,
-    };    
+      data64: jpegBuffer.toString("base64"),
+    };
 
     oauth.post(
       `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,

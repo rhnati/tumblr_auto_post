@@ -62,12 +62,11 @@ async function getMatch(matchGroup) {
         let postContent = `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥\n\n`;
         postContent += `Watch Now on SportScore: ${matchLink}\n\n`;
         postContent += `${hashtags}\n\n`;
-        postContent += `${matchLink}`;
 
         // Post to Tumblr after 1 minute interval
         setTimeout(() => {
-          postToTumblr(postContent);
-        }, matchIndex * 60000);
+          postToTumblr(postContent, matchLink);
+        }, matchIndex * 60000); // Adjusted interval based on matchIndex
 
         // Add matchId to the set to avoid reposting
         postedMatches.add(matchId);
@@ -79,7 +78,7 @@ async function getMatch(matchGroup) {
   }
 }
 
-async function postToTumblr(postText) {
+async function postToTumblr(postText, matchLink) {
   try {
     const oauth = new OAuth.OAuth(
       null,
@@ -92,10 +91,10 @@ async function postToTumblr(postText) {
     );
 
     const postParams = {
-      type: "text",
-      title: "🎌 Match Started! 🎌",
-      body: postText,
-    };
+      type: "photo",
+      caption: postText,
+      source: matchLink,
+    };    
 
     oauth.post(
       `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
