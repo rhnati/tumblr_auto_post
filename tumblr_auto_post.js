@@ -86,8 +86,8 @@ async function postToTumblr(postText, matchLink) {
     const webpImageResponse = await fetch(matchLink);
     const webpImageData = await webpImageResponse.buffer();
 
-    // Convert WebP to JPEG using sharp
-    const jpegBuffer = await sharp(webpImageData)
+    // Convert WebP to JPEG using sharp with explicit format specification
+    const jpegBuffer = await sharp(webpImageData, { input: 'buffer', raw: { format: 'webp' } })
       .jpeg()
       .toBuffer();
 
