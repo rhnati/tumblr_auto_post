@@ -1,16 +1,4 @@
 import OAuth from "oauth";
-import express from 'express';
-import multer from 'multer';
-import path from 'path';
-import axios from 'axios';
-import sharp from 'sharp';
-import FormData from 'form-data';
-import { NodeSSH } from 'node-ssh';
-import SFTPClient from 'ssh2-sftp-client';
-import { Buffer } from 'buffer';
-import fs from 'fs';
-
-const ssh = new NodeSSH();
 
 const consumerKey = 'qSjWrsq1wLRd5fmwxdkYwWO9PFXBxgYLfo3uyv8EMll6nYwOPN';
 const consumerSecret = 'XAZ4oOs8q5zhjKY4IJSkc8GSDQu2cRE7pSiQwVtZ4Dukv03nLF';
@@ -21,36 +9,6 @@ const tumblrBlogIdentifier = 'sportscore-io.tumblr.com';
 
 const postedMatches = new Set();
 let matchIndex = 0;
-
-//Convert image to jpeg
-async function convertAndSendImage(imageUrl, id) {
-  try {
-      // await clearUploadsFolder();
-      const response = await axios({
-          method: 'get',
-          url: imageUrl,
-          responseType: 'arraybuffer'
-      });
-
-      let image = sharp(response.data);
-      
-      const metadata = await image.metadata();
-      
-      image = image.resize({
-          width: metadata.width,
-          height: Math.floor(metadata.width / 1.91),
-          fit: 'cover'
-      });
-
-      const convertedImage = await image.jpeg().toBuffer();
-
-      const ws = fs.createWriteStream("/uploads_tumblr", convertedImage);
-      // ws.write(convertedImage);
-      // ws.end();
-  } catch (error) {
-      console.error('Error in converting or sending the image:', error);
-  }
-}
 
 function fetchData() {
   fetch(
@@ -91,10 +49,8 @@ async function getMatch(matchGroup) {
   try {
     const competition = matchGroup.competition.name;
 
-    for (const match of matchGroup.matches) {
+    matchGroup.matches.forEach((match) => {
       const matchId = match.id;
-      const convertedImageResponse = await convertAndSendImage(match.social_picture, matchId);
-      const myConvertedImagePath = convertedImageResponse.filePath;
 
       if (!postedMatches.has(matchId)) {
         const homeTeam = match.home_team.name;
@@ -109,14 +65,14 @@ async function getMatch(matchGroup) {
 
         // Post to Tumblr after 1 minute interval
         setTimeout(() => {
-          postToTumblr(postContent, `http://45.61.138.203${myConvertedImagePath}`);
+          postToTumblr(postContent, matchLink);
         }, matchIndex * 60000); // Adjusted interval based on matchIndex
 
         // Add matchId to the set to avoid reposting
         postedMatches.add(matchId);
         matchIndex++;
       }
-    };
+    });
   } catch (error) {
     console.error("Error getting match:", error.message);
   }
@@ -133,7 +89,6 @@ async function postToTumblr(postText, matchLink) {
       null,
       "HMAC-SHA1"
     );
-    console.log(matchLink);
 
     const postParams = {
       type: "photo",
