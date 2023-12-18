@@ -59,7 +59,7 @@ async function getMatch(matchGroup) {
         const homeTeam = match.home_team.name;
         const awayTeam = match.away_team.name;
         const league = competition;
-        const matchLink = match.url;
+        const matchLink = match.social_picture;
         const hashtags = `#${homeTeam.replace(/\s+/g, '')} #${awayTeam.replace(/\s+/g, '')} #${league.replace(/\s+/g, '')}`;
 
         let postContent = `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥\n\n`;
@@ -85,8 +85,6 @@ async function postToTumblr(postText, matchLink) {
   try {
     // Fetch WebP image using the matchLink
     const webpImageResponse = await fetch(matchLink);
-    console.log('Response Status:', webpImageResponse.status);
-    console.log('Response Headers:', webpImageResponse.headers);
     const webpImageBuffer = await webpImageResponse.arrayBuffer();
 
     // Convert WebP to JPEG using sharp stream
