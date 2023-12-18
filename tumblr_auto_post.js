@@ -88,14 +88,12 @@ async function postToTumblr(postText, matchLink) {
     const webpImageBuffer = Buffer.from(webpImageArrayBuffer);
 
     // Convert WebP to JPEG using sharp stream
-    const jpegBuffer = await sharp()
+    const jpegBuffer = await sharp(webpImageBuffer)
       .resize(800) // adjust the size as needed
       .jpeg()
       .toBuffer();
 
-    // Pipe the WebP image buffer through the sharp stream
-    await sharp(webpImageBuffer).toFormat('jpeg').pipe(jpegBuffer);
-    console.log(webpImageBuffer);
+    console.log(jpegBuffer);
 
     const oauth = new OAuth.OAuth(
       null,
@@ -131,6 +129,7 @@ async function postToTumblr(postText, matchLink) {
     console.error("Error:", error);
   }
 }
+
 
 setInterval(fetchData, 60000);
 
