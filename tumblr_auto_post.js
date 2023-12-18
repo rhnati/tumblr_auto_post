@@ -95,7 +95,7 @@ async function postToTumblr(postText, photoLink) {
 
     // Convert WebP to JPEG using sharp stream
     const jpegBuffer = await sharp(webpImageBuffer)
-      .resize(800) // adjust the size as needed
+      .resize(800)
       .jpeg()
       .toBuffer();
 
@@ -112,7 +112,7 @@ async function postToTumblr(postText, photoLink) {
     const postParams = {
       type: "photo",
       caption: postText,
-      data64: jpegBuffer.toString("base64"), // Use base64-encoded JPEG data
+      data64: jpegBuffer.toString("base64"),
     };
 
     oauth.post(
