@@ -55,6 +55,7 @@ async function getMatch(matchGroup) {
       const matchId = match.id;
 
       if (!postedMatches.has(matchId)) {
+        console.log(match);
         const homeTeam = match.home_team.name;
         const awayTeam = match.away_team.name;
         const league = competition;
