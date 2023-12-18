@@ -86,6 +86,7 @@ async function postToTumblr(postText, matchLink) {
     const webpImageResponse = await fetch(matchLink);
     const webpImageArrayBuffer = await webpImageResponse.arrayBuffer();
     const webpImageBuffer = Buffer.from(webpImageArrayBuffer);
+    console.log(webpImageBuffer);
 
     // Convert WebP to JPEG using sharp stream
     const jpegBuffer = await sharp()
@@ -111,7 +112,6 @@ async function postToTumblr(postText, matchLink) {
       caption: postText,
       data64: jpegBuffer.toString("base64"), // Use base64-encoded JPEG data
     };
-    console.log(postParams);
 
     oauth.post(
       `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
