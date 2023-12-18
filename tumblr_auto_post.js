@@ -1,7 +1,6 @@
 import OAuth from "oauth";
 import fetch from "node-fetch";
 import sharp from "sharp";
-import fs from 'fs';
 
 const consumerKey = 'qSjWrsq1wLRd5fmwxdkYwWO9PFXBxgYLfo3uyv8EMll6nYwOPN';
 const consumerSecret = 'XAZ4oOs8q5zhjKY4IJSkc8GSDQu2cRE7pSiQwVtZ4Dukv03nLF';
@@ -9,37 +8,9 @@ const accessToken = 'G8WVRF9jySZEBo3JaZNPD8eteXScj24aVKJK4kfWcuMuA5eOz0';
 const accessTokenSecret = '5ZhZ4oqaLYYjD0RNWRDdOLVUBgKvoypTOvMmhyYwDhNv94PnPs';
 
 const tumblrBlogIdentifier = 'sportscore-io.tumblr.com';
-const postedMatchesFile = 'postedMatches.json';
 
-const maxMemoryRetentionMinutes = 60;
-
-let postedMatches = loadPostedMatches();
+const postedMatches = new Set();
 let matchIndex = 0;
-
-function loadPostedMatches() {
-  try {
-    const data = fs.readFileSync(postedMatchesFile, 'utf-8');
-    return new Map(JSON.parse(data));
-  } catch (error) {
-    return new Map();
-  }
-}
-
-function savePostedMatches(postedMatchesMap) {
-  fs.writeFileSync(postedMatchesFile, JSON.stringify(Array.from(postedMatchesMap)), 'utf-8');
-}
-
-// Function to clear old matches from the postedMatches set
-function clearOldMatches() {
-  const currentTime = new Date().getTime();
-  const maxRetentionTime = maxMemoryRetentionMinutes * 60 * 1000;
-
-  for (const [matchId, matchTimestamp] of postedMatches.entries()) {
-    if (currentTime - matchTimestamp > maxRetentionTime) {
-      postedMatches.delete(matchId);
-    }
-  }
-}
 
 async function fetchData() {
   try {
@@ -90,30 +61,27 @@ async function getMatch(matchGroup) {
         const matchLink = match.url;
         const photoLink = match.social_picture;
         const hashtags = `#${homeTeam.replace(/\s+/g, '')} #${awayTeam.replace(/\s+/g, '')} #${league.replace(/\s+/g, '')}`;
-
+        
+        function encodeHashtag(hashtag) {
+          return encodeURIComponent(hashtag.replace(/#/g, ''));
+        }
+        
         let postContent = `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥<br>`;
         postContent += `Watch Now on SportScore: <a href="${matchLink}" target="_blank">${matchLink}</a><br>`;
         postContent += `<a href="https://www.tumblr.com/search/${encodeHashtag(homeTeam)}" target="_blank">#${homeTeam.replace(/\s+/g, '')}</a> `;
         postContent += `<a href="https://www.tumblr.com/search/${encodeHashtag(awayTeam)}" target="_blank">#${awayTeam.replace(/\s+/g, '')}</a> `;
-        postContent += `<a href="https://www.tumblr.com/search/${encodeHashtag(league)}" target="_blank">#${league.replace(/\s+/g, '')}</a><br>`;
+        postContent += `<a href="https://www.tumblr.com/search/${encodeHashtag(league)}" target="_blank">#${league.replace(/\s+/g, '')}</a><br>`;                     
 
         // Post to Tumblr after 1 minute interval
         setTimeout(() => {
           postToTumblr(postContent, photoLink);
         }, matchIndex * 60000); // Adjusted interval based on matchIndex
 
-        // Add matchId to the set with timestamp to track when it was posted
-        postedMatches.set(matchId, new Date().getTime());
+        // Add matchId to the set to avoid reposting
+        postedMatches.add(matchId);
         matchIndex++;
       }
     });
-
-    // Clear old matches from the set periodically
-    if (matchIndex % 10 === 0) {
-      clearOldMatches();
-      savePostedMatches(postedMatches);
-    }
-
   } catch (error) {
     console.error("Error getting match:", error.message);
   }
