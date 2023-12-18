@@ -55,16 +55,15 @@ async function getMatch(matchGroup) {
       const matchId = match.id;
 
       if (!postedMatches.has(matchId)) {
-        console.log(match);
         const homeTeam = match.home_team.name;
         const awayTeam = match.away_team.name;
         const league = competition;
         const matchLink = match.social_picture;
         const hashtags = `#${homeTeam.replace(/\s+/g, '')} #${awayTeam.replace(/\s+/g, '')} #${league.replace(/\s+/g, '')}`;
 
-        let postContent = `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥\n\n`;
-        postContent += `Watch Now on SportScore: ${matchLink}\n\n`;
-        postContent += `${hashtags}\n\n`;
+        let postContent = `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥<br>`;
+        postContent += `Watch Now on SportScore: ${matchLink}<br>`;
+        postContent += `${hashtags}<br>`;
 
         // Post to Tumblr after 1 minute interval
         setTimeout(() => {
