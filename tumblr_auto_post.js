@@ -111,6 +111,7 @@ async function postToTumblr(postText, matchLink) {
       caption: postText,
       data64: jpegBuffer.toString("base64"), // Use base64-encoded JPEG data
     };
+    console.log(postParams);
 
     oauth.post(
       `https://api.tumblr.com/v2/blog/${tumblrBlogIdentifier}/post`,
