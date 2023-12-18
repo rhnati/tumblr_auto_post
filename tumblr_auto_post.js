@@ -84,11 +84,10 @@ async function postToTumblr(postText, matchLink) {
   try {
     // Fetch WebP image using the matchLink
     const webpImageResponse = await fetch(matchLink);
-    const webpImageArrayBuffer = await webpImageResponse.arrayBuffer();
-    const webpImageBuffer = Buffer.from(webpImageArrayBuffer);
+    const webpImageBuffer = await webpImageResponse.buffer();
 
     // Convert WebP to JPEG using sharp stream
-    const jpegBuffer = await sharp(webpImageBuffer, { raw: { format: 'webp' } })
+    const jpegBuffer = await sharp(webpImageBuffer)
       .resize(800) // adjust the size as needed
       .jpeg()
       .toBuffer();
@@ -127,6 +126,7 @@ async function postToTumblr(postText, matchLink) {
     console.error("Error:", error);
   }
 }
+
 
 
 
