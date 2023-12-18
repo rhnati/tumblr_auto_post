@@ -58,18 +58,23 @@ async function getMatch(matchGroup) {
         const homeTeam = match.home_team.name;
         const awayTeam = match.away_team.name;
         const league = competition;
-        const matchLink = match.social_picture;
+        const matchLink = match.url;
+        const photoLink = match.social_picture;
         const hashtags = `#${homeTeam.replace(/\s+/g, '')} #${awayTeam.replace(/\s+/g, '')} #${league.replace(/\s+/g, '')}`;
-
+        
+        function encodeHashtag(hashtag) {
+          return encodeURIComponent(hashtag.replace(/#/g, ''));
+        }
+        
         let postContent = `💥⚽️💥 ${homeTeam} vs ${awayTeam} League: ${league} 💥⚽️💥<br>`;
-        postContent += `Watch Now on SportScore: <a href="${matchLink}">${matchLink}</a><br>`;
-        postContent += `<a href="${matchLink}">#${homeTeam.replace(/\s+/g, '')}</a> `;
-        postContent += `<a href="${matchLink}">#${awayTeam.replace(/\s+/g, '')}</a> `;
-        postContent += `<a href="${matchLink}">#${league.replace(/\s+/g, '')}</a><br>`;               
+        postContent += `Watch Now on SportScore: <a href="${matchLink}" target="_blank">${matchLink}</a><br>`;
+        postContent += `<a href="https://www.tumblr.com/search/${encodeHashtag(homeTeam)}" target="_blank">#${homeTeam.replace(/\s+/g, '')}</a> `;
+        postContent += `<a href="https://www.tumblr.com/search/${encodeHashtag(awayTeam)}" target="_blank">#${awayTeam.replace(/\s+/g, '')}</a> `;
+        postContent += `<a href="https://www.tumblr.com/search/${encodeHashtag(league)}" target="_blank">#${league.replace(/\s+/g, '')}</a><br>`;                     
 
         // Post to Tumblr after 1 minute interval
         setTimeout(() => {
-          postToTumblr(postContent, matchLink);
+          postToTumblr(postContent, photoLink);
         }, matchIndex * 60000); // Adjusted interval based on matchIndex
 
         // Add matchId to the set to avoid reposting
@@ -82,10 +87,10 @@ async function getMatch(matchGroup) {
   }
 }
 
-async function postToTumblr(postText, matchLink) {
+async function postToTumblr(postText, photoLink) {
   try {
     // Fetch WebP image using the matchLink
-    const webpImageResponse = await fetch(matchLink);
+    const webpImageResponse = await fetch(photoLink);
     const webpImageBuffer = await webpImageResponse.arrayBuffer();
 
     // Convert WebP to JPEG using sharp stream
