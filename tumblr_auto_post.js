@@ -11,6 +11,25 @@ const tumblrBlogIdentifier = 'sportscore-io.tumblr.com';
 
 const postedMatches = new Set();
 let matchIndex = 0;
+let autopostData;
+
+//Get autopost is on or off
+async function fetchAutopost() {
+  fetch('https://sportscore.io/api/v1/autopost/settings/tumblr/', {
+      method: 'GET',
+      headers: {
+          "accept": "application/json",
+          'X-API-Key': 'uqzmebqojezbivd2dmpakmj93j7gjm',
+      },
+  })
+  .then(response => response.json())
+  .then(data => {
+      autopostData = data;
+  })
+  .catch(error => {
+      console.error('Error:', error);
+  });
+}
 
 async function fetchData() {
   try {
@@ -40,7 +59,11 @@ function processData(matchGroups) {
     }
 
     matchGroups.forEach((matchGroup) => {
-      getMatch(matchGroup);
+      fetchAutopost();
+      console.log(autopostData);
+      if (autopostData[0].enabled) {
+        getMatch(matchGroup);
+      }
     });
   } catch (error) {
     console.error("Error processing data:", error);
