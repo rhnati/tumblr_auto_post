@@ -15,20 +15,19 @@ let autopostData;
 
 //Get autopost is on or off
 async function fetchAutopost() {
-  fetch('https://sportscore.io/api/v1/autopost/settings/tumblr/', {
+  try {
+    const response = await fetch('https://sportscore.io/api/v1/autopost/settings/tumblr/', {
       method: 'GET',
       headers: {
-          "accept": "application/json",
-          'X-API-Key': 'uqzmebqojezbivd2dmpakmj93j7gjm',
+        "accept": "application/json",
+        'X-API-Key': 's',
       },
-  })
-  .then(response => response.json())
-  .then(data => {
-      autopostData = data;
-  })
-  .catch(error => {
-      console.error('Error:', error);
-  });
+    });
+    const data = await response.json();
+    autopostData = data;
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
 
 async function fetchData() {
@@ -51,20 +50,21 @@ async function fetchData() {
   }
 }
 
-function processData(matchGroups) {
+async function processData(matchGroups) {
   try {
     if (!Array.isArray(matchGroups)) {
       console.error("Invalid matchGroups:", matchGroups);
       return;
     }
 
-    matchGroups.forEach((matchGroup) => {
-      fetchAutopost();
-      console.log(autopostData);
-      if (autopostData[0].enabled) {
+    await fetchAutopost();
+    console.log(autopostData);
+    
+    if (autopostData && autopostData[0] && autopostData[0].enabled) {
+      matchGroups.forEach((matchGroup) => {
         getMatch(matchGroup);
-      }
-    });
+      });
+    }
   } catch (error) {
     console.error("Error processing data:", error);
   }
