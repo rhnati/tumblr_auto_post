@@ -20,7 +20,7 @@ async function fetchAutopost() {
       method: 'GET',
       headers: {
         "accept": "application/json",
-        'X-API-Key': 's',
+        'X-API-Key': 'uqzmebqojezbivd2dmpakmj93j7gjm',
       },
     });
     const data = await response.json();
